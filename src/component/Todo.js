@@ -1,26 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import logo from '../images/logo.png'
 import '../App.css'
 
+//to get the data from Local Storage
+
+const getLocalItems = () =>{
+    let list  = localStorage.getItem('lists');
+    console.log(list);
+    if(list){
+        return JSON.parse(localStorage.getItem('lists'));
+    }else{
+        return [];
+    }
+}
+
 const Todo = () => {
     const [inputData, setInputData] = useState('');
-    const [items, setItems] = useState([]);
-    const[toggleSubmit,setToggleSubmit] = useState(true);
-    const [isEditItem,setIsEditItem] = useState(null);
+    const [inputData1, setInputData1] = useState('');
+    const [items, setItems] = useState(getLocalItems());
+    const [toggleSubmit, setToggleSubmit] = useState(true);
+    const [isEditItem, setIsEditItem] = useState(null);
 
     const addItem = () => {
         if (!inputData) {
             alert("Please Write Something..")
-        } 
-        else if(inputData && !toggleSubmit ){
+        }
+        else if (inputData && !toggleSubmit) {
             setItems(
-                items.map((elem)=>{
-                    if(elem.id === isEditItem){
-                        return { ...elem,name:inputData}
+                items.map((elem) => {
+                    if (elem.id === isEditItem) {
+                        return { ...elem, name: inputData }
                     }
                     return elem;
                 })
-                
+
             )
             setToggleSubmit(true);
             setInputData('');
@@ -42,22 +55,43 @@ const Todo = () => {
     }
 
     const editItem = (id) => {
-     let newEditItem = items.find((elem)=>{
-         return elem.id === id;
-     });
-    
-     setToggleSubmit(false);
-     setInputData(newEditItem.name);
-     setIsEditItem(id)
-     
+        let newEditItem = items.find((elem) => {
+            return elem.id === id;
+        });
+
+        setToggleSubmit(false);
+        setInputData(newEditItem.name);
+        setIsEditItem(id)
+
 
     }
     const removeAll = () => {
         setItems([]);
     }
+    useEffect(()=>{
+        setItems([]);
+        items.filter((val)=>{
+          if(val.name.toLowerCase().includes(inputData1.toLowerCase())){
+            setItems(items=>[...items,val]);
+          }
+        })
+          },[inputData1]);
+
+          //add data to local Storage
+
+          useEffect(()=>{
+                localStorage.setItem('lists',JSON.stringify(items))
+          },[items])
     return (
         <>
             <div className="main-div">
+                <div className="search">
+
+                    <input type="text" placeholder="🔎 Search Items..."
+                        value={inputData1}
+                        onChange={(e) => setInputData1(e.target.value)}
+                    />
+                </div>
                 <div className="child-div">
                     <figure>
                         <img src={logo} alt="logo" />
@@ -69,10 +103,10 @@ const Todo = () => {
                             onChange={(e) => setInputData(e.target.value)}
                         />
                         {
-                            toggleSubmit ?  <i className="fa fa-plus add-btn" title="Add Item" onClick={addItem}></i> :  <i className="fa fa-edit add-btn" title="Update Item" onClick={addItem}></i>
+                            toggleSubmit ? <i className="fa fa-plus add-btn" title="Add Item" onClick={addItem}></i> : <i className="fa fa-edit add-btn" title="Update Item" onClick={addItem}></i>
                         }
 
-                       
+
                     </div>
                     <div className="showItems">
 

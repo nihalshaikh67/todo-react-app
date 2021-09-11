@@ -10,6 +10,11 @@
 html {
   font-size: 62.5%;
 }
+.search{
+  position: absolute;
+  left:0;
+  margin-left:20px ;
+}
 
 .main-div {
   min-height: 100vh;
